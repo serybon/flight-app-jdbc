@@ -5,10 +5,7 @@ import by.bnd.je.jdbc.entity.FlightStatus;
 import by.bnd.je.jdbc.exception.DaoException;
 import by.bnd.je.jdbc.utils.ConnectionManager;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +15,7 @@ public class FlightDao implements Dao<Long, Flight> {
     private final static FlightDao INSTANCE = new FlightDao();
 
     private final static String SAVE_SQL =
-                    """
+            """
                     INSERT INTO flight(
                                        flight_no,
                                        departure_date,
@@ -30,11 +27,11 @@ public class FlightDao implements Dao<Long, Flight> {
                     VALUES (?,?,?,?,?,?,?)
                     """;
     private static final String DELETE_SQL =
-                """
+            """
                     DELETE FROM flight where id = ?
                     """;
     private static final String UPDATE_SQL =
-                    """
+            """
                     UPDATE flight
                     SET flight_no = ?,
                         departure_date = ?,
@@ -46,16 +43,16 @@ public class FlightDao implements Dao<Long, Flight> {
                     WHERE id = ?
                     """;
     private static final String FIND_ALL_SQL =
-                    """
+            """
                     SELECT id,flight_no, departure_date, departure_airport_code,
                            arrival_date, arrival_airport_code, aircraft_id,
                            status
                     FROM flight
                     """;
     private static final String FIND_BY_ID = FIND_ALL_SQL +
-                   """
-                   WHERE id = ?
-                   """;
+                                             """
+                                                     WHERE id = ?
+                                                     """;
 
     private FlightDao() {
     }
@@ -100,8 +97,15 @@ public class FlightDao implements Dao<Long, Flight> {
 
     @Override
     public Optional<Flight> findById(Long id) {
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(FIND_BY_ID)) {
+        try (var connection = ConnectionManager.get()) {
+            return findById(id, connection);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public Optional<Flight> findById(Long id, Connection connection) {
+        try (var statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setLong(1, id);
             var resultSet = statement.executeQuery();
             Flight flight = null;

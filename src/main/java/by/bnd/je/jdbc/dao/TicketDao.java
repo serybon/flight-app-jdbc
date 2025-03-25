@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 public class TicketDao implements Dao<Long,Ticket> {
     private final static TicketDao INSTANCE = new TicketDao();
+    private final static FlightDao flightDao = FlightDao.getInstance();
 
     private final static String SAVE_SQL =
                     """
@@ -167,21 +168,24 @@ public class TicketDao implements Dao<Long,Ticket> {
     }
 
     private static Ticket buildTicket(ResultSet resultSet) throws SQLException {
-        var flight = new Flight(
-                resultSet.getLong("flight_id"),
-                resultSet.getString("flight_no"),
-                resultSet.getTimestamp("departure_date").toLocalDateTime(),
-                resultSet.getString("departure_airport_code"),
-                resultSet.getTimestamp("arrival_date").toLocalDateTime(),
-                resultSet.getString("arrival_airport_code"),
-                resultSet.getInt("aircraft_id"),
-                FlightStatus.valueOf(resultSet.getString("status"))
-        );
+//        var flight = new Flight(
+//                resultSet.getLong("flight_id"),
+//                resultSet.getString("flight_no"),
+//                resultSet.getTimestamp("departure_date").toLocalDateTime(),
+//                resultSet.getString("departure_airport_code"),
+//                resultSet.getTimestamp("arrival_date").toLocalDateTime(),
+//                resultSet.getString("arrival_airport_code"),
+//                resultSet.getInt("aircraft_id"),
+//                FlightStatus.valueOf(resultSet.getString("status"))
+//        );
         return new Ticket(
                 resultSet.getLong("id"),
                 resultSet.getString("passport_no"),
                 resultSet.getString("passenger_name"),
-                flight,
+                flightDao.findById(
+                        resultSet.getLong("flight_id"),
+                        resultSet.getStatement().getConnection()).orElse(null),
+
                 resultSet.getString("seat_no"),
                 resultSet.getBigDecimal("cost"));
     }
