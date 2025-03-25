@@ -1,69 +1,32 @@
 package by.bnd.je.jdbc;
 
-import by.bnd.je.jdbc.utils.ConnectionManager;
+import by.bnd.je.jdbc.dao.TicketDao;
+import by.bnd.je.jdbc.entity.Ticket;
+import org.w3c.dom.ls.LSOutput;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JdbcRunner {
     public static void main(String[] args) throws SQLException {
-        String sql = """
-                select * from ticket;
-                """;
 
-        try (var connection = ConnectionManager.get()) {
-            var statement = connection.createStatement();
-            var result = statement.executeQuery(sql);
-            while (result.next()) {
-                System.out.println(result.getLong(1) + " " + result.getString(2) + " " + result.getString(3));
-            }
-        }
-        System.out.println(getTicketsByFlightId(1));
-        LocalDateTime start = LocalDateTime.parse("2023-10-01T00:00:00");
-        LocalDateTime end = LocalDateTime.parse("2023-10-03T23:59:59");
-        System.out.println(findFlightsBetween(start, end));
+        var ticketDao = TicketDao.getInstance();
+        Ticket ticket = new Ticket();
+        ticket.setPassportNo("MP1234");
+        ticket.setPassengerName("Paoulo Gucci");
+        ticket.setFlightId(4L);
+        ticket.setSeatNo("3B");
+        ticket.setCost(BigDecimal.TEN);
 
+        //System.out.println(ticketDao.save(ticket));
+        //System.out.println(ticketDao.delete(14L));
+        ticketDao.findAll().forEach(System.out::println);
+        System.out.println("SearchingElement: " + ticketDao.findTicketById(17L));
+        Ticket ticket2 = ticketDao.findTicketById(8L).get();
+        ticket2.setCost(BigDecimal.valueOf(399));
+        ticketDao.update(ticket2);
+        System.out.println(ticketDao.findTicketById(8L).get());
     }
 
-    public static List<Integer> getTicketsByFlightId(Integer flightId) throws SQLException {
-        String sql = """
-                select * from ticket
-                where flight_id = %s
-                """.formatted(flightId);
 
-        List<Integer> tickets = new ArrayList<>();
-        try (var connection = ConnectionManager.get()) {
-            var statement = connection.createStatement();
-            var result = statement.executeQuery(sql);
-            while (result.next()) {
-                System.out.println(result.getInt(1) + " " + result.getString(2)
-                                   + " " + result.getString(3) + " " + result.getInt(4)
-                                   + " " + result.getString(5) + " " + result.getBigDecimal(6));
-                tickets.add(result.getInt(1));
-            }
-        }
-        return tickets;
-    }
-
-    public static List<Integer> findFlightsBetween(LocalDateTime start, LocalDateTime end) throws SQLException {
-        String sql = """
-                select * from flight
-                where departure_date between ? and ?
-                """;
-
-        List<Integer> flights = new ArrayList<>();
-        try (var connection = ConnectionManager.get();
-             var statement = connection.prepareStatement(sql);) {
-            statement.setTimestamp(1, Timestamp.valueOf(start));
-            statement.setTimestamp(2, Timestamp.valueOf(end));
-            var result = statement.executeQuery();
-            while (result.next()) {
-                flights.add(result.getInt(1));
-            }
-        }
-        return flights;
-    }
 }
