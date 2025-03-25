@@ -26,7 +26,7 @@ public class TicketDao implements Dao<Long,Ticket> {
                     DELETE FROM ticket where id = ?
                     """;
     private static final String UPDATE_SQL =
-            """
+                    """
                     UPDATE ticket 
                     SET passport_no = ?,
                         passenger_name = ?,
@@ -62,22 +62,22 @@ public class TicketDao implements Dao<Long,Ticket> {
         }
     }
 
-    public Ticket save(Ticket t) {
+    public Ticket save(Ticket ticket) {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, t.getPassportNo());
-            statement.setString(2, t.getPassengerName());
-            statement.setLong(3, t.getFlightId());
-            statement.setString(4, t.getSeatNo());
-            statement.setBigDecimal(5, t.getCost());
+            statement.setString(1, ticket.getPassportNo());
+            statement.setString(2, ticket.getPassengerName());
+            statement.setLong(3, ticket.getFlightId());
+            statement.setString(4, ticket.getSeatNo());
+            statement.setBigDecimal(5, ticket.getCost());
             statement.executeUpdate();
 
             var keys = statement.getGeneratedKeys();
             if (keys.next()) {
-                t.setId(keys.getLong(1));
+                ticket.setId(keys.getLong(1));
             }
 
-            return t;
+            return ticket;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
