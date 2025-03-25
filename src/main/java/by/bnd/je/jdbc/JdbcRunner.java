@@ -1,6 +1,7 @@
 package by.bnd.je.jdbc;
 
 import by.bnd.je.jdbc.dao.FlightDao;
+import by.bnd.je.jdbc.dao.TicketDao;
 import by.bnd.je.jdbc.entity.Flight;
 import by.bnd.je.jdbc.entity.FlightStatus;
 
@@ -32,19 +33,24 @@ public class JdbcRunner {
 //        ticketDao.findAll(filter).forEach(System.out::println);
 
         var flightDao = FlightDao.getInstance();
+        //flightDao.findAll().forEach(System.out::println);
+//        Flight flight = new Flight();
+//        flight.setId(10L);
+//        flight.setFlightNo("255r");
+//        flight.setAircraftId(2);
+//        flight.setDepartureAirportCode("AAA");
+//        flight.setArrivalAirportCode("BBB");
+//        flight.setDepartureDate(LocalDateTime.of(2024,10,2,13,20));
+//        flight.setArrivalDate(LocalDateTime.of(2024,10,2,16,50));
+//        flight.setStatus(FlightStatus.boarding);
+        //flightDao.save(flight);
+        flightDao.delete(13L);
         flightDao.findAll().forEach(System.out::println);
-        Flight flight = new Flight();
-        flight.setId(10L);
-        flight.setFlightNo("255r");
-        flight.setAircraftId(2);
-        flight.setDepartureAirportCode("AAA");
-        flight.setArrivalAirportCode("BBB");
-        flight.setDepartureDate(LocalDateTime.of(2024,10,2,13,20));
-        flight.setArrivalDate(LocalDateTime.of(2024,10,2,16,50));
-        flight.setStatus(FlightStatus.boarding);
-        flightDao.save(flight);
-        flightDao.findAll().forEach(System.out::println);
-        System.out.println(flightDao.findById(10L));
+        //System.out.println(flightDao.findById(10L));
+        TicketDao ticketDao = TicketDao.getInstance();
+        ticketDao.findAll().forEach(System.out::println);
+        System.out.println("---------");
+        ticketDao.findById(12L).ifPresent(System.out::println);
 
 
     }

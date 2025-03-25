@@ -18,7 +18,7 @@ public class FlightDao implements Dao<Long, Flight> {
     private final static FlightDao INSTANCE = new FlightDao();
 
     private final static String SAVE_SQL =
-            """
+                    """
                     INSERT INTO flight(
                                        flight_no,
                                        departure_date,
@@ -30,11 +30,11 @@ public class FlightDao implements Dao<Long, Flight> {
                     VALUES (?,?,?,?,?,?,?)
                     """;
     private static final String DELETE_SQL =
-            """
+                """
                     DELETE FROM flight where id = ?
                     """;
     private static final String UPDATE_SQL =
-            """
+                    """
                     UPDATE flight
                     SET flight_no = ?,
                         departure_date = ?,
@@ -46,20 +46,16 @@ public class FlightDao implements Dao<Long, Flight> {
                     WHERE id = ?
                     """;
     private static final String FIND_ALL_SQL =
-            """
+                    """
                     SELECT id,flight_no, departure_date, departure_airport_code,
                            arrival_date, arrival_airport_code, aircraft_id,
                            status
                     FROM flight
                     """;
-    private static final String FIND_BY_ID =
-            """
-                    SELECT id,flight_no, departure_date, departure_airport_code,
-                           arrival_date, arrival_airport_code, aircraft_id,
-                           status 
-                    FROM flight
-                    WHERE id = ?
-                    """;
+    private static final String FIND_BY_ID = FIND_ALL_SQL +
+                   """
+                   WHERE id = ?
+                   """;
 
     private FlightDao() {
     }
@@ -91,7 +87,6 @@ public class FlightDao implements Dao<Long, Flight> {
     public List<Flight> findAll() {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(FIND_ALL_SQL)) {
-
             var resultSet = statement.executeQuery();
             List<Flight> flights = new ArrayList<>();
             while (resultSet.next()) {
@@ -102,7 +97,6 @@ public class FlightDao implements Dao<Long, Flight> {
             throw new DaoException(e);
         }
     }
-
 
     @Override
     public Optional<Flight> findById(Long id) {
