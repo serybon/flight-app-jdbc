@@ -51,7 +51,8 @@ public class JdbcRunner {
         ticketDao.findAll().forEach(System.out::println);
         System.out.println("---------");
         ticketDao.findById(12L).ifPresent(System.out::println);
-
+        System.out.println("---------");
+        ticketDao.findAllByFlightId(1L).forEach(System.out::println);
 
     }
 }

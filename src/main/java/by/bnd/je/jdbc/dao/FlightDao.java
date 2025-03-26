@@ -61,6 +61,8 @@ public class FlightDao implements Dao<Long, Flight> {
         return INSTANCE;
     }
 
+
+
     @Override
     public boolean update(Flight flight) {
         try (var connection = ConnectionManager.get();

@@ -51,6 +51,25 @@ public class TicketDao implements Dao<Long,Ticket> {
                     """
                     WHERE t.id = ?
                     """;
+    public static final String FIND_ALL_BY_FLIGHT_ID = FIND_ALL_SQL +
+            """
+            WHERE t.flight_id = ?
+            """;
+
+    public List<Ticket> findAllByFlightId(Long id) {
+        try (var connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(FIND_ALL_BY_FLIGHT_ID)) {
+            statement.setLong(1, id);
+            var resultSet = statement.executeQuery();
+            List<Ticket> tickets = new ArrayList<>();
+            while (resultSet.next()) {
+                tickets.add(buildTicket(resultSet));
+            }
+            return tickets;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
 
 
     public boolean update(Ticket ticket) {

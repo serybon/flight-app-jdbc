@@ -23,7 +23,7 @@ public class FlightServlet extends HttpServlet {
         resp.setContentType("text/html");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        try (PrintWriter writer = resp.getWriter()) {
+        try (var writer = resp.getWriter()) {
             writer.println("<h1>Список перелетов</h1>");
             writer.println("<ul>");
             flightService.findAll().stream().forEach(flightDto -> writer.write(
