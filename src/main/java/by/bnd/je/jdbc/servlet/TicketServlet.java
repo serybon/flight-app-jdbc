@@ -1,6 +1,7 @@
 package by.bnd.je.jdbc.servlet;
 
 import by.bnd.je.jdbc.service.TicketService;
+import by.bnd.je.jdbc.utils.JspHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,15 +22,16 @@ public class TicketServlet extends HttpServlet {
 
         Long flightId = Long.valueOf(req.getParameter("flightId"));
 
-        try (var writer = resp.getWriter()) {
-            writer.println("<h1>Купленные билеты</h1>");
-            writer.println("<ul>");
-            ticketService.findAllByFlightId(flightId).stream().forEach(ticketDto -> writer.write(
-                    """
-                        <li>%s</li>
-                        """.formatted(ticketDto.seatNo())
-            ));
-            writer.println("</ul>");
-        }
+        req.setAttribute("tickets", ticketService.findAllByFlightId(flightId));
+        req.getRequestDispatcher(JspHelper.getPath("tickets")).forward(req, resp);
     }
+
+//    @Override
+//    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        resp.setContentType("text/html");
+//        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+//
+//        req.setAttribute("tickets", ticketService.findAll());
+//        req.getRequestDispatcher(JspHelper.getPath("tickets")).forward(req, resp);
+//    }
 }

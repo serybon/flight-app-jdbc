@@ -20,6 +20,13 @@ public class TicketService {
                 ticket.getSeatNo())).collect(Collectors.toList());
     }
 
+    public List<TicketDto> findAll() {
+        return ticketDao.findAll().stream().map(ticket -> new TicketDto(
+                ticket.getId(),
+                ticket.getFlight().getId(),
+                ticket.getSeatNo())).collect(Collectors.toList());
+    }
+
     private TicketService() {
     }
 
